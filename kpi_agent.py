@@ -32,7 +32,7 @@ def calculate_kpis(df_raw, df_optimized):
     return kpis
 
 if __name__ == '__main__':
-    from data_simulator import generate_warehouse_data
+    from data_agent import generate_warehouse_data
     from inventory_agent import perform_abc_analysis
     from slotting_agent import recommend_slotting
     
