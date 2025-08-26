@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from data_simulator import generate_warehouse_data
+from data_agent import generate_warehouse_data
 from inventory_agent import perform_abc_analysis
 from slotting_agent import recommend_slotting
 from kpi_agent import calculate_kpis
