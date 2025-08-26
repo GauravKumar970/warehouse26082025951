@@ -27,7 +27,7 @@ def perform_abc_analysis(df):
     return df_abc
 
 if __name__ == '__main__':
-    from data_simulator import generate_warehouse_data
+    from data_agent import generate_warehouse_data
     df = generate_warehouse_data()
     df_analyzed = perform_abc_analysis(df)
     print(df_analyzed[['Product_ID', 'Total_Demand', 'Cum_Demand_Pct', 'ABC_Category']].head())
