@@ -30,7 +30,7 @@ def recommend_slotting(df_analyzed):
     return df_optimized
 
 if __name__ == '__main__':
-    from data_simulator import generate_warehouse_data
+    from data_agent import generate_warehouse_data
     from inventory_agent import perform_abc_analysis
     
     df_raw = generate_warehouse_data()
