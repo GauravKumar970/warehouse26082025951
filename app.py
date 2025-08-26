@@ -30,15 +30,15 @@ if st.button("Run Optimization"):
     for kpi, value in kpis.items():
         st.markdown(f"**{kpi}:** {value}")
         if kpi == "Storage Utilization Rate":
-            st.markdown("📌 *Recommendation:* Ensure high-demand items are prioritized. A very high rate may indicate overstocking.")
+            st.markdown("F4CC *Recommendation:* Ensure high-demand items are prioritized. A very high rate may indicate overstocking.")
         elif kpi == "Inventory Consolidation Index":
-            st.markdown("📌 *Recommendation:* Consolidate fragmented SKUs to reduce retrieval time and improve space usage.")
+            st.markdown("F4CC *Recommendation:* Consolidate fragmented SKUs to reduce retrieval time and improve space usage.")
         elif kpi == "Average Pick Time":
-            st.markdown("📌 *Recommendation:* Reduce pick time by placing fast-moving items closer to picking zones.")
+            st.markdown("F4CC *Recommendation:* Reduce pick time by placing fast-moving items closer to picking zones.")
         elif kpi == "Slotting Accuracy":
-            st.markdown("📌 *Recommendation:* Improve slotting logic to ensure high-turnover items are in optimal zones.")
+            st.markdown("F4CC *Recommendation:* Improve slotting logic to ensure high-turnover items are in optimal zones.")
         elif kpi == "Space Cost per Unit Stored":
-            st.markdown("📌 *Recommendation:* Lower cost per unit by optimizing layout and reducing long-tail SKUs.")
+            st.markdown("F4CC *Recommendation:* Lower cost per unit by optimizing layout and reducing long-tail SKUs.")
 
     st.subheader("AI-Driven Recommendation Summary")
     if model:
