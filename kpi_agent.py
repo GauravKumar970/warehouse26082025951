@@ -6,20 +6,24 @@ def calculate_kpis(df_raw, df_optimized):
     # 1. Total SKUs and ABC Category Distribution
     kpis['Total_SKUs'] = df_raw.shape[0]
     category_counts = df_optimized['ABC_Category'].value_counts()
+    
+    # Returning raw numbers for visualization
+    abc_distribution = category_counts.to_dict()
+    kpis['abc_distribution'] = abc_distribution
+    
     for cat in category_counts.index:
         kpis[f"Products_in_Category_{cat}"] = int(category_counts[cat])
+        
     kpis['Percentage_A_Products'] = f"{kpis['Products_in_Category_A'] / kpis['Total_SKUs'] * 100:.2f}%"
     kpis['Percentage_B_Products'] = f"{kpis['Products_in_Category_B'] / kpis['Total_SKUs'] * 100:.2f}%"
     kpis['Percentage_C_Products'] = f"{kpis['Products_in_Category_C'] / kpis['Total_SKUs'] * 100:.2f}%"
 
     # 2. Storage Utilization Rate (%) (Simulated)
-    # Assumes a total of 150 available slots and 100 products.
     total_slots = 150
     occupied_slots = df_optimized.shape[0]
     kpis['Storage_Utilization_Rate_Pct'] = f"{(occupied_slots / total_slots) * 100:.2f}%"
 
     # 3. Inventory Consolidation Index (Simulated)
-    # Measures the reduction in fragmented storage locations.
     initial_locations = df_raw['Current_Location'].nunique()
     optimized_locations = df_optimized['New_Location'].nunique()
     kpis['Initial_Locations'] = initial_locations
@@ -27,7 +31,6 @@ def calculate_kpis(df_raw, df_optimized):
     kpis['Inventory_Consolidation_Index'] = f"{((initial_locations - optimized_locations) / initial_locations) * 100:.2f}%"
 
     # 4. Average Pick Time (seconds/order) (Simulated)
-    # Assumes 'A' items are quick to pick, 'B' are moderate, 'C' are slow.
     pick_time_A = 20  # seconds
     pick_time_B = 60  # seconds
     pick_time_C = 120 # seconds
@@ -41,15 +44,13 @@ def calculate_kpis(df_raw, df_optimized):
     kpis['Average_Pick_Time_Sec'] = f"{(total_pick_time / total_demand):.2f}"
 
     # 5. Slotting Accuracy (%) (Simulated)
-    # Assuming the slotting agent correctly places all items.
     kpis['Slotting_Accuracy_Pct'] = "100.00%"
     
     # 6. ABC Zone Efficiency (%) (Simulated)
-    # Assuming 'A' zones are highly utilized, 'B' moderately, and 'C' less so.
     kpis['ABC_Zone_Efficiency_Pct'] = "95.00%"
 
     # 7. Space Cost per Unit Stored (Simulated)
-    total_space_cost = 50000  # Assumed total monthly cost in dollars
+    total_space_cost = 50000
     total_units = df_optimized.shape[0]
     kpis['Space_Cost_Per_Unit'] = f"${(total_space_cost / total_units):.2f}"
 
