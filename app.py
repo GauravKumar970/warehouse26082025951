@@ -1,9 +1,10 @@
+
 import streamlit as st
 import pandas as pd
-from agents.data_agent import generate_warehouse_data
-from agents.inventory_agent import perform_abc_analysis
-from agents.slotting_agent import recommend_slotting
-from agents.kpi_agent import calculate_kpis
+from data_agent import generate_warehouse_data
+from inventory_agent import perform_abc_analysis
+from slotting_agent import recommend_slotting
+from kpi_agent import calculate_kpis
 
 st.title("Smart Space Management: AI-Driven Warehouse Optimization")
 
