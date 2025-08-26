@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 def generate_warehouse_data():
-    np.random.seed(42)
+    # np.random.seed(42)  <-- This line has been removed
     data = {
         'Product_ID': [f'PROD_{i+1:03}' for i in range(100)],
         'Item_Type': np.random.choice(['SKU', 'Non-SKU'], 100, p=[0.8, 0.2]),
