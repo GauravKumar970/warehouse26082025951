@@ -159,7 +159,9 @@ st.write("") # Spacer
 st.subheader("Visual Analysis of Inventory")
 abc_df = pd.DataFrame(st.session_state.kpis['abc_distribution'].items(), columns=['Category', 'Count'])
 fig = px.pie(abc_df, values='Count', names='Category', title='ABC Inventory Distribution', color_discrete_sequence=px.colors.qualitative.Pastel)
-st.plotly_chart(fig, use_container_width=True)
+
+# *** THIS IS THE FIX ***
+st.plotly_chart(fig, use_container_width=True, config={'staticPlot': True})
 
 # --- Run Optimization Button (at the bottom) ---
 st.markdown("---")
