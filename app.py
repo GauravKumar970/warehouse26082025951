@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
-import io
 import plotly.express as px
 
 # Import AI agents
@@ -52,6 +51,12 @@ st.markdown("""
         font-weight: bold;
         border-radius: 10px;
     }
+    .executive-summary-box {
+        background-color: #f0f2f6;
+        padding: 25px;
+        border-radius: 10px;
+        border: 1px solid #dcdcdc;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -64,28 +69,27 @@ if 'df_raw' not in st.session_state:
     st.session_state.kpis = calculate_kpis(st.session_state.df_raw, st.session_state.df_optimized)
     st.session_state.recommendations = {}
     st.session_state.summary = ""
-    st.session_state.show_table = False
+    st.session_state.show_results = False
 
 # --- Gemini API Configuration ---
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-def generate_summary_with_gemini(kpis, recommendations):
+def generate_summary_with_gemini(kpis):
     prompt = f"""
-    You are an AI-powered warehouse management consultant. Your task is to generate a comprehensive, professional summary based on the provided Key Performance Indicators (KPIs) and recommendations from an AI-driven warehouse optimization run.
+    You are a data-driven AI assistant. Based on the following KPI data from a warehouse optimization run, provide a concise, bullet-point executive summary. Focus on actionable insights and key metrics.
 
     Here are the KPI results:
-    {kpis}
+    - Storage Utilization Rate: {kpis.get('Storage_Utilization_Rate_Pct', 'N/A')}
+    - Inventory Consolidation Index: {kpis.get('Inventory_Consolidation_Index', 'N/A')}
+    - Average Pick Time: {kpis.get('Average_Pick_Time_Sec', 'N/A')}s
+    - Total SKUs: {kpis.get('Total_SKUs', 'N/A')}
 
-    Here are the actionable recommendations for each KPI:
-    {recommendations}
-
-    Please write a detailed report that:
-    1. Summarizes the overall performance of the warehouse.
-    2. Highlights the key successes of the optimization, especially in improving picking efficiency and space utilization.
-    3. Provides clear, actionable next steps based on the recommendations.
-    4. Concludes with a statement on the value of a data-driven approach to warehouse management.
-    The summary should be professional, insightful, and formatted for easy readability.
+    **Instructions:**
+    1.  Start with a clear, one-sentence conclusion.
+    2.  Provide 3-4 bullet points highlighting the most impactful actions and metrics.
+    3.  Focus on numbers and specific outcomes rather than general statements.
+    4.  End with a call to action.
     """
     response = model.generate_content(prompt)
     return response.text
@@ -104,7 +108,7 @@ with col2:
         st.session_state.df_optimized = recommend_slotting(st.session_state.df_analyzed)
         st.session_state.kpis = calculate_kpis(st.session_state.df_raw, st.session_state.df_optimized)
         st.session_state.summary = ""
-        st.session_state.show_table = False
+        st.session_state.show_results = False
         st.rerun()
 
 # --- KPI Dashboard Section ---
@@ -159,8 +163,6 @@ st.write("") # Spacer
 st.subheader("Visual Analysis of Inventory")
 abc_df = pd.DataFrame(st.session_state.kpis['abc_distribution'].items(), columns=['Category', 'Count'])
 fig = px.pie(abc_df, values='Count', names='Category', title='ABC Inventory Distribution', color_discrete_sequence=px.colors.qualitative.Pastel)
-
-# *** THIS IS THE FIX ***
 st.plotly_chart(fig, use_container_width=True, config={'staticPlot': True})
 
 # --- Run Optimization Button (at the bottom) ---
@@ -173,40 +175,41 @@ if st.button("Run Optimization"):
         st.session_state.df_optimized = recommend_slotting(st.session_state.df_analyzed)
         st.session_state.kpis = calculate_kpis(st.session_state.df_raw, st.session_state.df_optimized)
         st.session_state.recommendations = generate_kpi_recommendations(st.session_state.kpis)
-        st.session_state.summary = generate_summary_with_gemini(st.session_state.kpis, st.session_state.recommendations)
-        st.session_state.show_table = True
+        st.session_state.summary = generate_summary_with_gemini(st.session_state.kpis)
+        st.session_state.show_results = True
     st.success("Optimization analysis complete!")
     st.rerun()
 
-
 # --- Dynamic Recommendation Section (appears after clicking the button) ---
-if st.session_state.show_table:
-    st.subheader("Detailed Recommendations")
-    rec_cols = st.columns(2)
-    recs = list(st.session_state.recommendations.values())
+if st.session_state.show_results:
+    st.subheader("Detailed Recommendations & Action Plan")
+    st.markdown("<div class='executive-summary-box'>", unsafe_allow_html=True)
+    st.dataframe(st.session_state.recommendations.set_index('KPI'))
+    st.markdown("</div>", unsafe_allow_html=True)
     
-    with rec_cols[0]:
-        st.info(recs[0])
-        st.info(recs[2])
-        st.info(recs[4])
-
-    with rec_cols[1]:
-        st.info(recs[1])
-        st.info(recs[3])
-        st.info(recs[5])
-        
-    st.write("---")
-
-    # The table is now here
-    st.subheader("Optimized Warehouse Layout Recommendations")
-    st.write("This table shows the recommended new locations for each product based on the ABC analysis.")
-    st.dataframe(st.session_state.df_optimized[['Product_ID', 'ABC_Category', 'Daily_Demand', 'Current_Location', 'New_Location']])
-
     st.write("---")
 
     st.subheader("AI-Powered Executive Summary")
-    st.info(st.session_state.summary)
+    summary_cols = st.columns([2,1])
+    with summary_cols[0]:
+        st.markdown(st.session_state.summary)
 
+    with summary_cols[1]:
+        kpi_summary_data = {
+            'Metric': ['Storage Utilization', 'Average Pick Time'],
+            'Value': [st.session_state.kpis['Storage_Utilization_Rate_Pct'], st.session_state.kpis['Average_Pick_Time_Sec'] + "s"]
+        }
+        kpi_summary_df = pd.DataFrame(kpi_summary_data)
+        fig_summary = px.bar(kpi_summary_df, x='Metric', y='Value', color='Metric', title='Key Performance Metrics')
+        st.plotly_chart(fig_summary, use_container_width=True)
+
+    st.write("---")
+
+    st.subheader("Optimized Warehouse Layout Recommendations")
+    st.write("This table shows the precise relocation plan for each product.")
+    st.dataframe(st.session_state.df_optimized[['Product_ID', 'ABC_Category', 'Daily_Demand', 'Current_Location', 'New_Location']])
+
+    st.write("---")
     # Download button
     summary_text = st.session_state.summary
     st.download_button(
