@@ -11,55 +11,72 @@ from kpi_agent import calculate_kpis
 from recommendation_agent import generate_kpi_recommendations
 
 # --- Page Configuration ---
-st.set_page_config(layout="wide", page_title="Smart Warehouse Optimization for CTO")
+st.set_page_config(layout="wide", page_title="Smart Space Management")
 
-# --- Custom CSS for Styling ---
+# --- Custom CSS for Aesthetics ---
 st.markdown("""
 <style>
-    .kpi-container {
-        background-color: #f0f2f6;
-        padding: 20px;
-        border-radius: 10px;
-        border: 1px solid #e0e0e0;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    /* Main header styling */
+    .main-header {
+        color: #004d40;
+        text-align: center;
+        font-weight: bold;
+        font-size: 2.5em;
+        margin-top: -20px;
     }
+    .subheader {
+        color: #263238;
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-top: 20px;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 5px;
+    }
+    .section-separator {
+        margin: 40px 0;
+        border-top: 2px solid #cfd8dc;
+    }
+    /* KPI card styling */
     .stMetric {
-        background-color: #ffffff;
+        background-color: #f5f5f5;
+        border-left: 5px solid #009688;
         padding: 15px;
         border-radius: 8px;
-        border: 1px solid #dcdcdc;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
+    /* Button styling */
+    .stButton>button {
+        background-color: #00796b;
+        color: white;
+        font-weight: bold;
+        border-radius: 10px;
+        border: none;
+        padding: 12px 24px;
+        width: 100%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .stButton>button:hover {
+        background-color: #004d40;
+    }
+    /* Agent flow boxes */
     .agent-box {
-        background-color: #e6f7ff;
+        background-color: #e0f2f1;
         border-radius: 10px;
         padding: 10px;
         margin: 5px;
         text-align: center;
-        border: 2px solid #1890ff;
+        border: 1px solid #009688;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
-    .main-header {
-        color: #1a237e;
-        text-align: center;
-        font-weight: bold;
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        font-weight: bold;
-        border-radius: 10px;
-    }
-    .executive-summary-box {
-        background-color: #f0f2f6;
-        padding: 25px;
-        border-radius: 10px;
-        border: 1px solid #dcdcdc;
+    /* Custom container for data tables */
+    .data-container {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
     }
 </style>
 """, unsafe_allow_html=True)
-
 
 # --- Initial Page Load & State Management ---
 if 'df_raw' not in st.session_state:
@@ -97,7 +114,7 @@ def generate_summary_with_gemini(kpis):
 # --- Main App Layout ---
 st.markdown("<h1 class='main-header'>Smart Space Management</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #555;'>AI-Powered Warehouse Space Optimization</p>", unsafe_allow_html=True)
-st.write("") # Spacer
+st.write("")
 
 # Top section with refresh button
 col1, col2, col3 = st.columns([1, 2, 1])
@@ -112,7 +129,7 @@ with col2:
         st.rerun()
 
 # --- KPI Dashboard Section ---
-st.subheader("Key Performance Indicators at a Glance")
+st.markdown("<h2 class='subheader'>Key Performance Indicators at a Glance</h2>", unsafe_allow_html=True)
 kpi_cols = st.columns(3)
 with kpi_cols[0]:
     st.metric("Storage Utilization Rate", st.session_state.kpis['Storage_Utilization_Rate_Pct'])
@@ -129,10 +146,10 @@ with kpi_cols2[1]:
 with kpi_cols2[2]:
     st.metric("Space Cost per Unit", st.session_state.kpis['Space_Cost_Per_Unit'])
 
-st.write("---")
+st.markdown("<div class='section-separator'></div>", unsafe_allow_html=True)
 
 # --- Agent Contribution Section ---
-st.subheader("AI Agent Workflow")
+st.markdown("<h2 class='subheader'>AI Agent Workflow</h2>", unsafe_allow_html=True)
 st.write("The following AI agents work together in a sequence to provide comprehensive optimization insights.")
 agent_cols = st.columns(11)
 with agent_cols[0]:
@@ -157,16 +174,16 @@ with agent_cols[9]:
     st.markdown("<div style='text-align: center;'>➡️</div>", unsafe_allow_html=True)
 with agent_cols[10]:
     st.markdown("<div class='agent-box'>✍️ Gemini Model</div>", unsafe_allow_html=True)
-st.write("") # Spacer
+st.write("")
 
 # --- Visualization Section ---
-st.subheader("Visual Analysis of Inventory")
+st.markdown("<h2 class='subheader'>Visual Analysis of Inventory</h2>", unsafe_allow_html=True)
 abc_df = pd.DataFrame(st.session_state.kpis['abc_distribution'].items(), columns=['Category', 'Count'])
 fig = px.pie(abc_df, values='Count', names='Category', title='ABC Inventory Distribution', color_discrete_sequence=px.colors.qualitative.Pastel)
 st.plotly_chart(fig, use_container_width=True, config={'staticPlot': True})
 
-# --- Run Optimization Button (at the bottom) ---
-st.markdown("---")
+# --- Run Optimization Button ---
+st.markdown("<div class='section-separator'></div>", unsafe_allow_html=True)
 st.write("Click the button below to perform a full optimization analysis and get a detailed executive summary.")
 if st.button("Run Optimization"):
     with st.spinner("Analyzing and optimizing..."):
@@ -180,36 +197,47 @@ if st.button("Run Optimization"):
     st.success("Optimization analysis complete!")
     st.rerun()
 
-# --- Dynamic Recommendation Section (appears after clicking the button) ---
+# --- Dynamic Results Section (appears after clicking the button) ---
 if st.session_state.show_results:
-    st.subheader("Detailed Recommendations & Action Plan")
-    st.markdown("<div class='executive-summary-box'>", unsafe_allow_html=True)
-    st.dataframe(st.session_state.recommendations.set_index('KPI'))
+    st.markdown("<div class='section-separator'></div>", unsafe_allow_html=True)
+
+    # 1. Detailed Recommendations (Table)
+    st.markdown("<h2 class='subheader'>Detailed Recommendations & Action Plan</h2>", unsafe_allow_html=True)
+    st.markdown("<div class='data-container'>", unsafe_allow_html=True)
+    st.dataframe(st.session_state.recommendations.set_index('KPI'), use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
     
-    st.write("---")
+    st.markdown("<div class='section-separator'></div>", unsafe_allow_html=True)
 
-    st.subheader("AI-Powered Executive Summary")
+    # 2. Optimized Warehouse Layout (Table)
+    st.markdown("<h2 class='subheader'>Optimized Warehouse Layout Recommendations</h2>", unsafe_allow_html=True)
+    st.write("This table shows the precise relocation plan for each product.")
+    st.markdown("<div class='data-container'>", unsafe_allow_html=True)
+    st.dataframe(st.session_state.df_optimized[['Product_ID', 'ABC_Category', 'Daily_Demand', 'Current_Location', 'New_Location']], use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    st.markdown("<div class='section-separator'></div>", unsafe_allow_html=True)
+
+    # 3. AI-Powered Executive Summary (Text & Graph)
+    st.markdown("<h2 class='subheader'>AI-Powered Executive Summary</h2>", unsafe_allow_html=True)
     summary_cols = st.columns([2,1])
     with summary_cols[0]:
         st.markdown(st.session_state.summary)
 
     with summary_cols[1]:
         kpi_summary_data = {
-            'Metric': ['Storage Utilization', 'Average Pick Time'],
-            'Value': [st.session_state.kpis['Storage_Utilization_Rate_Pct'], st.session_state.kpis['Average_Pick_Time_Sec'] + "s"]
+            'Metric': ['Storage Utilization Rate', 'Average Pick Time'],
+            'Value': [
+                float(st.session_state.kpis['Storage_Utilization_Rate_Pct'].replace('%', '')),
+                float(st.session_state.kpis['Average_Pick_Time_Sec'])
+            ]
         }
         kpi_summary_df = pd.DataFrame(kpi_summary_data)
         fig_summary = px.bar(kpi_summary_df, x='Metric', y='Value', color='Metric', title='Key Performance Metrics')
         st.plotly_chart(fig_summary, use_container_width=True)
+    
+    st.markdown("<div class='section-separator'></div>", unsafe_allow_html=True)
 
-    st.write("---")
-
-    st.subheader("Optimized Warehouse Layout Recommendations")
-    st.write("This table shows the precise relocation plan for each product.")
-    st.dataframe(st.session_state.df_optimized[['Product_ID', 'ABC_Category', 'Daily_Demand', 'Current_Location', 'New_Location']])
-
-    st.write("---")
     # Download button
     summary_text = st.session_state.summary
     st.download_button(
