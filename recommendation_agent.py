@@ -1,37 +1,43 @@
+import pandas as pd
+
 def generate_kpi_recommendations(kpis):
-    recommendations = {}
-
-    recommendations['Storage_Utilization_Rate_Pct'] = (
-        "**Recommendation for Storage Utilization:** The current utilization is at {}. "
-        "To improve, consider re-evaluating the long-tail assortment to free up valuable space."
-    ).format(kpis['Storage_Utilization_Rate_Pct'])
-
-    recommendations['Inventory_Consolidation_Index'] = (
-        "**Recommendation for Inventory Consolidation:** The optimization process consolidated {} initial locations to {} new locations. "
-        "This resulted in a {} consolidation index, significantly reducing fragmented storage and improving efficiency."
-    ).format(kpis['Initial_Locations'], kpis['Optimized_Locations'], kpis['Inventory_Consolidation_Index'])
-
-    recommendations['Average_Pick_Time_Sec'] = (
-        "**Recommendation for Pick Time:** The current average pick time is approximately {} seconds. "
-        "This is a direct result of placing high-demand 'A' items in easily accessible locations, "
-        "which minimizes travel time for pickers."
-    ).format(kpis['Average_Pick_Time_Sec'])
-
-    recommendations['Slotting_Accuracy_Pct'] = (
-        "**Recommendation for Slotting Accuracy:** The current slotting accuracy is {}. "
-        "This indicates a high degree of precision in item placement. To maintain this, "
-        "ensure a regular review of inventory profiles and update the slotting strategy accordingly."
-    ).format(kpis['Slotting_Accuracy_Pct'])
-
-    recommendations['ABC_Zone_Efficiency_Pct'] = (
-        "**Recommendation for ABC Zone Efficiency:** The 'A' zone efficiency is currently at {}. "
-        "This high utilization demonstrates that prime space is effectively allocated to fast-moving inventory. "
-        "Continue to monitor demand patterns to prevent overstocking."
-    ).format(kpis['ABC_Zone_Efficiency_Pct'])
-
-    recommendations['Space_Cost_Per_Unit'] = (
-        "**Recommendation for Space Cost:** With an average space cost of {} per unit, the current strategy is cost-efficient. "
-        "Further reductions can be achieved by eliminating slow-moving SKUs."
-    ).format(kpis['Space_Cost_Per_Unit'])
-
-    return recommendations
+    # This will now return a structured list of dictionaries
+    recommendations_data = [
+        {
+            "KPI": "Storage Utilization Rate",
+            "Current State": kpis.get('Storage_Utilization_Rate_Pct', 'N/A'),
+            "Action/Recommendation": "Optimize existing rack space and floor layout to accommodate new inventory efficiently.",
+            "Additional Details": "Focus on high-density storage solutions for low-turnover items. Consider vertical storage options to maximize cubic space."
+        },
+        {
+            "KPI": "Inventory Consolidation",
+            "Current State": kpis.get('Inventory_Consolidation_Index', 'N/A'),
+            "Action/Recommendation": "Consolidate fragmented inventory by co-locating similar SKUs.",
+            "Additional Details": "Move all products from 'Current Location' to the recommended 'New Location' to improve pick-path efficiency and reduce space wastage."
+        },
+        {
+            "KPI": "Average Pick Time",
+            "Current State": kpis.get('Average_Pick_Time_Sec', 'N/A') + "s",
+            "Action/Recommendation": "Reduce picker travel distance by placing high-demand 'A' category items in the most accessible zones.",
+            "Additional Details": "Ensure the fastest moving SKUs are closest to the shipping docks. Consider a separate zone for order picking."
+        },
+        {
+            "KPI": "ABC Zone Efficiency",
+            "Current State": kpis.get('ABC_Zone_Efficiency_Pct', 'N/A'),
+            "Action/Recommendation": "Maintain the optimal layout based on demand to improve workflow.",
+            "Additional Details": "Implement a continuous review process to re-evaluate product classifications quarterly and update the layout as demand patterns change."
+        },
+        {
+            "KPI": "Space Cost per Unit",
+            "Current State": kpis.get('Space_Cost_Per_Unit', 'N/A'),
+            "Action/Recommendation": "Identify and remove low-performing, low-demand SKUs to reduce long-term storage costs.",
+            "Additional Details": "Flag products that have not been picked in the last 90 days. Collaborate with the sales team to either promote or phase out these items."
+        },
+        {
+            "KPI": "Detailed Recommendations",
+            "Current State": f"{kpis.get('Total_SKUs', 'N/A')} SKUs",
+            "Action/Recommendation": "Utilize the 'Optimized Warehouse Layout' table for a precise SKU-by-SKU relocation plan.",
+            "Additional Details": "The attached table provides the exact 'New Location' for each product, enabling immediate action on the warehouse floor."
+        }
+    ]
+    return pd.DataFrame(recommendations_data)
